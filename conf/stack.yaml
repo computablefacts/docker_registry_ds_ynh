@@ -1,0 +1,23 @@
+version: "3"
+services:
+  registry:
+    image: registry:2.8
+    ports:
+    - target: 5000
+      published: __PORT__
+    volumes:
+      - ./data/registry-data:/var/lib/registry
+      - ./registry-config.yml:/etc/docker/registry/config.yml
+
+  ui:
+    image: joxit/docker-registry-ui:latest
+    ports:
+      - target: 80
+        published: __PORT_UI__
+    environment:
+      - REGISTRY_TITLE=Docker Registry UI
+      - NGINX_PROXY_PASS_URL=http://registry:5000
+      - SINGLE_REGISTRY=true
+      - DELETE_IMAGES=true
+    depends_on:
+      - registry
